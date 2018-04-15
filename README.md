@@ -140,6 +140,68 @@ public List<GalleryItem> getDateImagePathList(int startYear, int startMonth, int
 
 
 
+## # ExifInterface
+
+Exif 는 'Exchangeable image file format' 의 줄임말입니다. 즉, 교환이미지 파일형식을 뜻 합니다.
+
+쉽게 말해서 사진 정보를 의미합니다. 사진 정보는 사진의 위도, 경도, 촬영 시간, 방향 등 미디어(사진) 파일이 내포하고 있는 메타 데이터를 의미합니다.
+
+Exif 는 쓰기, 읽기, 복사, 인코딩, 디코딩 등을 활용하여 다양한 부분에서 활용됩니다. 위치 정보를 통해 지도에 촬영 정보를 남기거나 Orientation 을 체크하여 이미지를 회전시킬 수 있습니다. 이 뿐만 아니라 촬영 시간으로 사진 목록을 Grouping 할 수도 있습니다.
+
+해당 프로젝트에서는 Exif 메타 데이터를 읽어 간단하게 출력하고 있습니다.
+
+````java
+//다음의 해당 프로젝트의 RecyclerView clickListener 입니다.
+private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            final int position = rcvGallery.getChildAdapterPosition(view);
+            //Exif 정보
+            try {
+            //해당 position 의 MediaStore.MediaColumns.DATA 를 
+            //이용하여 ExifInterface 객체를 생성합니다.
+                ExifInterface exif = 
+                    new ExifInterface(galleryAdapter
+                       .getGalleryItemList()
+                       .get(position).getImagePath());
+                
+                showExif(exif);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, 
+                               "Error : " + e.toString()
+                               , Toast.LENGTH_LONG).show();
+            }
+        }
+    };
+
+
+````
+
+
+
+다음은 Exif 의 정보를 출력하는 함수입니다.
+
+````java
+ private void showExif(ExifInterface exif) {
+        StringBuilder myAttribute = new StringBuilder();
+        myAttribute.append("[Exif information] \n\n")
+                .append(getTagString(ExifInterface.TAG_DATETIME, exif)) // 시간
+                .append(getTagString(ExifInterface.TAG_FLASH, exif)) // Flash 여부
+                .append(getTagString(ExifInterface.TAG_GPS_LATITUDE, exif)) // 위도
+                .append(getTagString(ExifInterface.TAG_GPS_LONGITUDE, exif)) // 경도
+                .append(getTagString(ExifInterface.TAG_IMAGE_LENGTH, exif)) // 세로 길이
+                .append(getTagString(ExifInterface.TAG_IMAGE_WIDTH, exif)) // 가로 길이
+                .append(getTagString(ExifInterface.TAG_MAKE, exif)) // 제조사
+                .append(getTagString(ExifInterface.TAG_MODEL, exif)) // 기기 명
+                .append(getTagString(ExifInterface.TAG_ORIENTATION, exif)) // 방향
+
+        Toast.makeText(this, myAttribute.toString(), Toast.LENGTH_SHORT).show();
+    }
+````
+
+이외에도 수 많은 정보를 이용하여 다양한 부분에 활용할 수 있습니다.
+
 
 
 
